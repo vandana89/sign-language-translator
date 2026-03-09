@@ -8,6 +8,8 @@ import os
 from collections import deque
 import json
 from deep_translator import GoogleTranslator
+import threading
+import time
 
 app = Flask(__name__)
 
@@ -23,8 +25,8 @@ class SignLanguageTranslator:
         self.mp_drawing = mp.solutions.drawing_utils
         self.hands = self.mp_hands.Hands(
             static_image_mode=False,
-            max_num_hands=2,  # Support 2 hands!
-            min_detection_confidence=0.5,  # Lower for better detection
+            max_num_hands=2,
+            min_detection_confidence=0.5,
             min_tracking_confidence=0.5
         )
         
@@ -165,13 +167,46 @@ def load_model():
 translator = load_model()
 camera = None
 camera_active = False
+camera_lock = threading.Lock()
+
+# ==================== ROUTES ====================
 
 @app.route('/')
-def index():
-    """Render the main page"""
+def welcome():
+    """Render the welcome page"""
+    if translator is None:
+        return "Model not found! Please train a model first.", 500
+    return render_template('welcome.html')
+
+@app.route('/camera')
+def camera_route():
+    """Render the camera detection page"""
+    if translator is None:
+        return "Model not found! Please train a model first.", 500
+    return render_template('camera.html', gestures=translator.labels.tolist())
+
+@app.route('/translation')
+def translation():
+    """Render the translation page"""
+    if translator is None:
+        return "Model not found! Please train a model first.", 500
+    return render_template('translation.html')
+
+@app.route('/thankyou')
+def thankyou():
+    """Render the thank you page"""
+    if translator is None:
+        return "Model not found! Please train a model first.", 500
+    return render_template('thankyou.html')
+
+@app.route('/original')
+def original():
+    """Render the original single-page interface (kept for reference)"""
     if translator is None:
         return "Model not found! Please train a model first.", 500
     return render_template('index.html', gestures=translator.labels.tolist())
+
+# ==================== API ENDPOINTS ====================
 
 def generate_frames():
     """Generate frames for video streaming with frame skipping for performance"""
@@ -181,13 +216,14 @@ def generate_frames():
     
     try:
         while camera_active:
-            if camera is None:
-                break
-                
-            success, frame = camera.read()
-            if not success:
-                print("Failed to read frame from camera")
-                break
+            with camera_lock:
+                if camera is None or not camera_active:
+                    break
+                    
+                success, frame = camera.read()
+                if not success:
+                    print("Failed to read frame from camera")
+                    break
             
             frame = cv2.flip(frame, 1)
             
@@ -208,10 +244,10 @@ def generate_frames():
             # Encode frame
             try:
                 ret, buffer = cv2.imencode('.jpg', processed_frame)
-                frame = buffer.tobytes()
+                frame_bytes = buffer.tobytes()
                 
                 yield (b'--frame\r\n'
-                       b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
             except Exception as e:
                 print(f"Error encoding frame: {e}")
                 break
@@ -231,64 +267,72 @@ def start_camera():
     """Start the camera"""
     global camera, camera_active
     
-    try:
-        if not camera_active:
-            print("Attempting to start camera...")
-            camera = cv2.VideoCapture(0)
+    with camera_lock:
+        try:
+            if not camera_active:
+                print("Attempting to start camera...")
+                camera = cv2.VideoCapture(0)
+                
+                if not camera.isOpened():
+                    print("Failed to open camera at index 0, trying index 1...")
+                    camera = cv2.VideoCapture(1)
+                
+                if not camera.isOpened():
+                    print("Camera could not be opened!")
+                    camera = None
+                    return jsonify({'status': 'error', 'message': 'Camera could not be opened. Please check if camera is available.'})
+                
+                camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+                camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+                camera.set(cv2.CAP_PROP_FPS, 15)
+                camera.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+                
+                # Test read
+                ret, _ = camera.read()
+                if not ret:
+                    print("Camera opened but cannot read frames!")
+                    camera.release()
+                    camera = None
+                    return jsonify({'status': 'error', 'message': 'Camera opened but cannot read frames.'})
+                
+                camera_active = True
+                print("Camera started successfully!")
+                return jsonify({'status': 'success', 'message': 'Camera started'})
             
-            if not camera.isOpened():
-                print("Failed to open camera at index 0, trying index 1...")
-                camera = cv2.VideoCapture(1)
-            
-            if not camera.isOpened():
-                print("Camera could not be opened!")
-                camera = None
-                return jsonify({'status': 'error', 'message': 'Camera could not be opened. Please check if camera is available.'})
-            
-            camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)   # Lower = faster
-            camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-            camera.set(cv2.CAP_PROP_FPS, 15)            # Lower FPS = smoother
-            camera.set(cv2.CAP_PROP_BUFFERSIZE, 1)      # Reduce buffer lag
-            
-            # Test read
-            ret, _ = camera.read()
-            if not ret:
-                print("Camera opened but cannot read frames!")
-                camera.release()
-                camera = None
-                return jsonify({'status': 'error', 'message': 'Camera opened but cannot read frames.'})
-            
-            camera_active = True
-            print("Camera started successfully!")
-            return jsonify({'status': 'success', 'message': 'Camera started'})
-        
-        return jsonify({'status': 'error', 'message': 'Camera already active'})
-    except Exception as e:
-        print(f"Error starting camera: {e}")
-        camera = None
-        camera_active = False
-        return jsonify({'status': 'error', 'message': f'Error starting camera: {str(e)}'})
+            return jsonify({'status': 'error', 'message': 'Camera already active'})
+        except Exception as e:
+            print(f"Error starting camera: {e}")
+            camera = None
+            camera_active = False
+            return jsonify({'status': 'error', 'message': f'Error starting camera: {str(e)}'})
 
 @app.route('/stop_camera', methods=['POST'])
 def stop_camera():
     """Stop the camera"""
     global camera, camera_active
     
-    try:
-        if camera_active:
-            camera_active = False
-            if camera is not None:
+    print("Stop camera requested...")
+    
+    # First, stop the video feed loop
+    camera_active = False
+    
+    # Wait for video feed to stop
+    time.sleep(0.5)
+    
+    # Now safely release the camera
+    with camera_lock:
+        if camera is not None:
+            try:
+                print("Releasing camera...")
                 camera.release()
+                print("Camera released!")
+            except Exception as e:
+                print(f"Warning during camera release: {e}")
+            finally:
                 camera = None
-            print("Camera stopped successfully!")
-            return jsonify({'status': 'success', 'message': 'Camera stopped'})
-        
-        return jsonify({'status': 'error', 'message': 'Camera not active'})
-    except Exception as e:
-        print(f"Error stopping camera: {e}")
-        camera_active = False
-        camera = None
-        return jsonify({'status': 'error', 'message': f'Error stopping camera: {str(e)}'})
+    
+    print("Camera stopped successfully!")
+    return jsonify({'status': 'success', 'message': 'Camera stopped'})
 
 @app.route('/get_prediction', methods=['GET'])
 def get_prediction():
@@ -296,7 +340,7 @@ def get_prediction():
     global camera, camera_active
     
     try:
-        if not camera_active or camera is None:
+        if not camera_active:
             return jsonify({
                 'gesture': None,
                 'confidence': 0,
@@ -305,15 +349,25 @@ def get_prediction():
                 'sentence': translator.sentence
             })
         
-        success, frame = camera.read()
-        if not success:
-            return jsonify({
-                'gesture': None,
-                'confidence': 0,
-                'all_predictions': [],
-                'hand_detected': False,
-                'sentence': translator.sentence
-            })
+        with camera_lock:
+            if camera is None:
+                return jsonify({
+                    'gesture': None,
+                    'confidence': 0,
+                    'all_predictions': [],
+                    'hand_detected': False,
+                    'sentence': translator.sentence
+                })
+            
+            success, frame = camera.read()
+            if not success:
+                return jsonify({
+                    'gesture': None,
+                    'confidence': 0,
+                    'all_predictions': [],
+                    'hand_detected': False,
+                    'sentence': translator.sentence
+                })
         
         frame = cv2.flip(frame, 1)
         _, gesture, confidence, all_preds, hand_detected = translator.process_frame(frame)
@@ -422,6 +476,7 @@ def get_languages():
         'ur': 'Urdu'
     }
     return jsonify({'languages': languages})
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

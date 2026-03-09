@@ -8,6 +8,12 @@ let isPaused = false;
 
 // Text-to-Speech
 const synth = window.speechSynthesis;
+let voices = [];
+
+speechSynthesis.onvoiceschanged = () => {
+    voices = speechSynthesis.getVoices();
+};
+
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -207,7 +213,7 @@ function updateCameraStatus(active) {
 
 // Start prediction updates
 function startPredictionUpdates() {
-    updateInterval = setInterval(updatePredictions, 200); // Update every 200ms (optimized for performance)
+    updateInterval = setInterval(updatePredictions, 1000); // Update every 200ms (optimized for performance)
 }
 
 // Stop prediction updates
@@ -445,19 +451,41 @@ async function speakSentence() {
 
 // Speak text with language support
 function speakText(text, lang = 'en') {
-    // Cancel any ongoing speech
+
     synth.cancel();
-    
-    // Create utterance
+
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.9;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
-    utterance.lang = getVoiceLang(lang);
-    
-    // Speak
+
+    if (!voices.length) {
+        voices = speechSynthesis.getVoices();
+    }
+
+    let matchedVoice = null;
+
+    // Try to find exact language voice
+    matchedVoice = voices.find(voice =>
+        voice.lang.toLowerCase().includes(lang.toLowerCase())
+    );
+
+    // If Indian language not found → use Hindi voice
+    if (!matchedVoice && ['te','ta','kn'].includes(lang)) {
+        matchedVoice = voices.find(v => v.lang.includes("hi"));
+    }
+
+    // If still not found → use English voice
+    if (!matchedVoice) {
+        matchedVoice = voices.find(v => v.lang.includes("en"));
+    }
+
+    utterance.voice = matchedVoice;
+    utterance.lang = matchedVoice.lang;
+
     synth.speak(utterance);
 }
+
 
 // Translate text to target language
 async function translateText(text, targetLang) {
@@ -515,8 +543,7 @@ function getLanguageName(code) {
         'ru': 'Russian',
         'ja': 'Japanese',
         'ko': 'Korean',
-        'zh-cn': 'Chinese',
-        'ar': 'Arabic',
+        
         'ta': 'Tamil',
         'te': 'Telugu',
         'kn': 'Kannada'
@@ -537,8 +564,7 @@ function getVoiceLang(code) {
         'ru': 'ru-RU',
         'ja': 'ja-JP',
         'ko': 'ko-KR',
-        'zh-cn': 'zh-CN',
-        'ar': 'ar-SA',
+        
         'ta': 'ta-IN',
         'te': 'te-IN',
         'kn': 'kn-IN'

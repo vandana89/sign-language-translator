@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤟 Sign Language Translator - Thank You</title>
+    
+    <!-- Font Awesome for large icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        .thankyou-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .thankyou-icon {
+            font-size: 10rem;
+            margin-bottom: 30px;
+            animation: bounceIn 1s ease-out;
+        }
+        
+        .thankyou-title {
+    font-size: 4rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 20px;
+    animation: fadeInUp 1s ease-out 0.2s both;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+        
+        .thankyou-message {
+            font-size: 1.5rem;
+            color: white;
+            max-width: 700px;
+            margin: 0 auto 50px;
+            line-height: 1.8;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+        
+        .thankyou-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            max-width: 800px;
+            margin: 0 auto 50px;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .stat-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .stat-desc {
+            font-size: 0.95rem;
+            color: #666;
+        }
+        
+        .return-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            padding: 25px 60px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            animation: fadeInUp 1s ease-out 0.8s both;
+        }
+        
+        .return-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6);
+        }
+        
+        .return-button i {
+            font-size: 2rem;
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .thankyou-title {
+                font-size: 2.5rem;
+            }
+            
+            .thankyou-icon {
+                font-size: 6rem;
+            }
+            
+            .thankyou-message {
+                font-size: 1.2rem;
+            }
+            
+            .return-button {
+                padding: 20px 40px;
+                font-size: 1.2rem;
+            }
+            
+            .thankyou-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <i class="fas fa-hands"></i>
+                Sign Language Translator
+            </h1>
+            <p class="subtitle">Session Complete</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="thankyou-container">
+                <div class="thankyou-icon">🎉</div>
+                
+                <h1 class="thankyou-title">Thank You!</h1>
+                
+                <p class="thankyou-message">
+                    Thank you for using Sign Language Translator. 
+                    We hope our AI-powered system helped bridge the communication gap 
+                    and made your interaction more inclusive.
+                </p>
+                
+                <div class="thankyou-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-hands"></i>
+                        </div>
+                        <div class="stat-title">Real-Time Detection</div>
+                        <div class="stat-desc">Instant gesture recognition with high accuracy</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <div class="stat-title">Multi-Language</div>
+                        <div class="stat-desc">Translated to your preferred language</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-volume-up"></i>
+                        </div>
+                        <div class="stat-title">Text-to-Speech</div>
+                        <div class="stat-desc">Natural voice synthesis enabled</div>
+                    </div>
+                </div>
+                
+                <a href="/" class="return-button">
+                    <i class="fas fa-home"></i>
+                    <span>Return to Home</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Sign Language Translator</p>
+        </div>
+    </footer>
+</body>
+</html>

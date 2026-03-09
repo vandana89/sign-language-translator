@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤟 Sign Language Translator - Welcome</title>
+    
+    <!-- Font Awesome for large icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .welcome-title {
+    font-size: 4rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 20px;
+    animation: fadeInUp 1s ease-out;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+        
+        .welcome-icon {
+            font-size: 8rem;
+            margin-bottom: 30px;
+            animation: wave 2s ease-in-out infinite;
+        }
+        
+        .welcome-description {
+            font-size: 1.5rem;
+            color: white;
+            max-width: 700px;
+            margin: 0 auto 50px;
+            line-height: 1.8;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+        
+        .welcome-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            max-width: 900px;
+            margin: 0 auto 50px;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .feature-desc {
+            font-size: 0.95rem;
+            color: #666;
+        }
+        
+        .start-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            padding: 25px 60px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+        
+        .start-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6);
+        }
+        
+        .start-button i {
+            font-size: 2rem;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2.5rem;
+            }
+            
+            .welcome-icon {
+                font-size: 5rem;
+            }
+            
+            .welcome-description {
+                font-size: 1.2rem;
+            }
+            
+            .start-button {
+                padding: 20px 40px;
+                font-size: 1.2rem;
+            }
+            
+            .welcome-features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <i class="fas fa-hands"></i>
+                Sign Language Translator
+            </h1>
+            <p class="subtitle">Real-time translation with AI</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="welcome-container">
+                <div class="welcome-icon">🤟</div>
+                
+                <h1 class="welcome-title">Welcome to Sign Language Translator</h1>
+                
+                <p class="welcome-description">
+                    Bridge the communication gap with our AI-powered real-time sign language recognition system. 
+                    Translate hand gestures into text and speech instantly.
+                </p>
+                
+                <div class="welcome-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="feature-title">Real-Time Detection</div>
+                        <div class="feature-desc">Live camera feed with instant gesture recognition</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="feature-title">AI-Powered</div>
+                        <div class="feature-desc">Advanced CNN model for accurate predictions</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <div class="feature-title">Multi-Language</div>
+                        <div class="feature-desc">Translate to 15+ languages including Hindi, Tamil, Telugu</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-volume-up"></i>
+                        </div>
+                        <div class="feature-title">Text-to-Speech</div>
+                        <div class="feature-desc">Convert detected gestures to spoken words</div>
+                    </div>
+                </div>
+                
+                <a href="/camera" class="start-button">
+                    <i class="fas fa-play-circle"></i>
+                    <span>Start Detection</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Sign Language Translator</p>
+        </div>
+    </footer>
+</body>
+</html>

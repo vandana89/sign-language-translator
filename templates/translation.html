@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤟 Sign Language Translator - Translation</title>
+    
+    <!-- Font Awesome for large icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        .page-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .nav-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .nav-button-secondary {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+        
+        .nav-button-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(168, 237, 234, 0.4);
+        }
+        
+        .nav-button-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .nav-button-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+        }
+        
+        .nav-button i {
+            font-size: 1.5rem;
+        }
+        
+        .translation-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <i class="fas fa-hands"></i>
+                Sign Language Translator
+            </h1>
+            <p class="subtitle">Translation & Speech</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="translation-grid">
+                <!-- Sentence Builder -->
+                <div class="card sentence-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-comment-dots"></i> Sentence</h2>
+                        <div class="word-count" id="wordCount">0 words</div>
+                    </div>
+                    <div class="sentence-display" id="sentenceDisplay">
+                        <p class="sentence-text" id="sentenceText">Your sentence will appear here...</p>
+                    </div>
+                    
+                    <!-- Sentence Controls -->
+                    <div class="sentence-controls">
+                        <button class="btn btn-success btn-large" onclick="addToSentence()">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add Current</span>
+                        </button>
+                        <button class="btn btn-warning btn-large" onclick="speakSentence()">
+                            <i class="fas fa-volume-up"></i>
+                            <span>Speak</span>
+                        </button>
+                        <button class="btn btn-secondary btn-large" onclick="clearSentence()">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>Clear</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Language Selection -->
+                    <div class="language-selector">
+                        <label for="languageSelect"><i class="fas fa-language"></i> Translate to:</label>
+                        <select id="languageSelect" class="language-dropdown">
+                            <option value="en">English</option>
+                            <option value="hi">Hindi (हिंदी)</option>
+                            <option value="es">Spanish (Español)</option>
+                            <option value="fr">French (Français)</option>
+                            <option value="de">German (Deutsch)</option>
+                            <option value="it">Italian (Italiano)</option>
+                            <option value="pt">Portuguese (Português)</option>
+                            <option value="ru">Russian (Русский)</option>
+                            <option value="ja">Japanese (日本語)</option>
+                            <option value="ko">Korean (한국어)</option>
+                            
+                            <option value="ta">Tamil (தமிழ்)</option>
+                            <option value="te">Telugu (తెలుగు)</option>
+                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Translation Display -->
+                    <div class="translation-display" id="translationDisplay" style="display: none;">
+                        <div class="translation-label">Translation:</div>
+                        <div class="translation-text" id="translationText"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="page-navigation">
+                <a href="/camera" class="nav-button nav-button-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Camera</span>
+                </a>
+                <a href="/thankyou" class="nav-button nav-button-success">
+                    <span>Finish</span>
+                    <i class="fas fa-check-circle"></i>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Sign Language Translator</p>
+        </div>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+    <script>
+        // Initialize sentence display on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Fetch and display current sentence
+            try {
+                const response = await fetch('/get_sentence');
+                const data = await response.json();
+                if (data.sentence) {
+                    updateSentenceDisplay(data.sentence);
+                }
+            } catch (error) {
+                console.error('Error loading sentence:', error);
+            }
+        });
+    </script>
+</body>
+</html>
