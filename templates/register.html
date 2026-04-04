@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Register - Sign Language Translator</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+.auth-container{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+min-height:80vh;
+text-align:center;
+}
+
+.auth-title{
+font-size:4rem;
+font-weight:700;
+color:white;
+margin-bottom:10px;
+text-shadow:2px 2px 10px rgba(0,0,0,0.3);
+}
+
+.auth-subtitle{
+color:white;
+font-size:1.4rem;
+margin-bottom:40px;
+}
+
+.auth-card{
+background:white;
+padding:40px;
+border-radius:20px;
+width:400px;
+box-shadow:0 15px 50px rgba(0,0,0,0.2);
+animation:fadeIn 0.8s ease;
+}
+
+.auth-card input{
+width:100%;
+padding:14px;
+margin:10px 0;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:1rem;
+outline:none;
+transition:0.3s;
+}
+
+.auth-card input:focus{
+border-color:#667eea;
+box-shadow:0 0 8px rgba(102,126,234,0.4);
+}
+
+.auth-card button{
+width:100%;
+padding:15px;
+margin-top:10px;
+background:linear-gradient(135deg,#667eea,#764ba2);
+color:white;
+border:none;
+border-radius:12px;
+font-size:1.2rem;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+}
+
+.auth-card button:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.auth-link{
+margin-top:15px;
+}
+
+.auth-link a{
+color:#667eea;
+font-weight:600;
+text-decoration:none;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(30px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="header">
+<div class="container">
+<h1 class="logo">
+<i class="fas fa-hands"></i>
+Sign Language Translator
+</h1>
+<p class="subtitle">Real-time translation</p>
+</div>
+</header>
+
+<div class="auth-container">
+
+<h1 class="auth-title">Create Account</h1>
+
+<p class="auth-subtitle">
+Register to experience Sign Language Translator
+</p>
+
+<div class="auth-card">
+
+<form method="POST">
+
+<input type="text" name="username" placeholder="Username" required minlength="3" pattern="[A-Za-z0-9]+">
+
+<input type="email" name="email" placeholder="Email" required>
+
+<input type="text" name="phone" placeholder="Phone Number" required pattern="[0-9]{10}">
+
+<input type="password" name="password" placeholder="Password"
+required
+pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}"
+title="Must contain uppercase, lowercase, number & special character">
+
+<select name="question" required>
+<option value="">Select Security Question</option>
+<option value="city">What city were you born in?</option>
+<option value="school">What is your school name?</option>
+<option value="pet">What is your pet name?</option>
+</select>
+
+<input type="text" name="answer" placeholder="Answer" required>
+<button type="submit">
+<i class="fas fa-user-plus"></i> Register
+</button>
+
+</form>
+
+<div class="auth-link">
+Already have an account?
+<a href="/login">Login</a>
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

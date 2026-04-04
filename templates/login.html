@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login - Sign Language Translator</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+.auth-container{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+min-height:80vh;
+text-align:center;
+}
+
+.auth-title{
+font-size:3.5rem;
+font-weight:700;
+color:white;
+margin-bottom:10px;
+}
+
+.auth-subtitle{
+color:white;
+font-size:1.3rem;
+margin-bottom:40px;
+}
+
+.auth-card{
+background:white;
+padding:40px;
+border-radius:20px;
+width:380px;
+box-shadow:0 10px 40px rgba(0,0,0,0.2);
+}
+
+.auth-card input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:1rem;
+}
+
+.auth-card button{
+width:100%;
+padding:14px;
+margin-top:10px;
+background:linear-gradient(135deg,#667eea,#764ba2);
+color:white;
+border:none;
+border-radius:10px;
+font-size:1.1rem;
+font-weight:600;
+cursor:pointer;
+}
+
+.auth-card button:hover{
+opacity:0.9;
+}
+
+.auth-link{
+margin-top:15px;
+}
+
+.auth-link a{
+color:#667eea;
+font-weight:600;
+text-decoration:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="header">
+<div class="container">
+<h1 class="logo">
+<i class="fas fa-hands"></i>
+Sign Language Translator
+</h1>
+<p class="subtitle">Real-time translation</p>
+</div>
+</header>
+
+<div class="auth-container">
+
+<h1 class="auth-title">Welcome Back</h1>
+
+<p class="auth-subtitle">
+Login to continue using Sign Language Translator
+</p>
+
+<div class="auth-card">
+
+<form method="POST">
+
+<input type="text" name="username" placeholder="Username" required>
+
+<input type="password" name="password" placeholder="Password" required>
+
+<button type="submit">
+<i class="fas fa-sign-in-alt"></i> Login
+</button>
+
+</form>
+<div class="auth-link">
+<a href="/forgot">Forgot Password?</a>
+</div>
+
+<div class="auth-link">
+Don't have an account?
+<a href="/register">Register</a>
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Reset Password</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+.auth-container{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+min-height:80vh;
+text-align:center;
+}
+
+.auth-title{
+font-size:3.8rem;
+font-weight:700;
+color:white;
+margin-bottom:10px;
+text-shadow:2px 2px 10px rgba(0,0,0,0.3);
+}
+
+.auth-subtitle{
+color:white;
+font-size:1.3rem;
+margin-bottom:40px;
+}
+
+.auth-card{
+background:white;
+padding:40px;
+border-radius:20px;
+width:400px;
+box-shadow:0 15px 50px rgba(0,0,0,0.2);
+animation:fadeIn 0.8s ease;
+}
+
+.auth-card input{
+width:100%;
+padding:14px;
+margin:10px 0;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:1rem;
+}
+
+.auth-card button{
+width:100%;
+padding:15px;
+background:linear-gradient(135deg,#667eea,#764ba2);
+color:white;
+border:none;
+border-radius:12px;
+font-size:1.2rem;
+font-weight:600;
+cursor:pointer;
+}
+
+.auth-card button:hover{
+transform:translateY(-2px);
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(30px);}
+to{opacity:1;transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+<div class="container">
+<h1 class="logo">
+<i class="fas fa-hands"></i>
+Sign Language Translator
+</h1>
+<p class="subtitle">Reset Password</p>
+</div>
+</header>
+
+<div class="auth-container">
+
+<h1 class="auth-title">Reset Password</h1>
+
+<p class="auth-subtitle">
+Enter a new password to continue
+</p>
+
+<div class="auth-card">
+
+<form method="POST">
+
+
+<input type="password" name="new_password" placeholder="New Password"
+required
+pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}"
+title="Must contain uppercase, lowercase, number & special character">
+<button type="submit">
+<i class="fas fa-lock"></i> Reset Password
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</body>
+</html>

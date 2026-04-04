@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, jsonify, request
+from flask import Flask, render_template, Response, jsonify, request, redirect, url_for, session
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -10,8 +10,23 @@ import json
 from deep_translator import GoogleTranslator
 import threading
 import time
+import random
+import re
+otp_storage = {}
+
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        return {}
+    with open(USERS_FILE, "r") as f:
+        return json.load(f)
+
+def save_users(users):
+    with open(USERS_FILE, "w") as f:
+        json.dump(users, f)
 
 app = Flask(__name__)
+app.secret_key = "secret123"
+USERS_FILE = "users.json"
 
 class SignLanguageTranslator:
     def __init__(self, model_path, labels_path):
@@ -171,15 +186,147 @@ camera_lock = threading.Lock()
 
 # ==================== ROUTES ====================
 
+
+@app.route('/register', methods=['GET','POST'])
+def register():
+
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        phone = request.form['phone']
+        password = request.form['password']
+        question = request.form['question']
+        answer = request.form['answer'].lower()
+
+        users = load_users()
+
+        # Username validation
+        if username in users:
+            return "Username already exists"
+
+        if not username.isalnum() or len(username) < 3:
+            return "Invalid username"
+
+        # Email validation
+        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(email_pattern, email):
+            return "Invalid email"
+
+        # Phone validation
+        if len(phone) != 10 or not phone.isdigit():
+            return "Invalid phone number"
+
+        # Strong password validation
+        password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$'
+        if not re.match(password_pattern, password):
+            return "Password must contain uppercase, lowercase, number & special character"
+
+        users[username] = {
+            "email": email,
+            "phone": phone,
+            "password": password,
+            "question": question,
+            "answer": answer
+        }
+
+        save_users(users)
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+
+# ================= LOGIN =================
+@app.route('/login', methods=['GET','POST'])
+def login():
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        users = load_users()
+
+        if username in users and users[username]['password'] == password:
+            session['user'] = username
+            return redirect(url_for('welcome'))
+
+        return "Invalid username or password"
+
+    return render_template('login.html')
+
+
+# ================= FORGOT =================
+@app.route('/forgot', methods=['GET','POST'])
+def forgot():
+
+    if request.method == 'POST':
+        username = request.form['username']
+        answer = request.form['answer'].lower()
+
+        users = load_users()
+
+        if username in users:
+
+            if users[username]['answer'] == answer:
+                session['reset_user'] = username
+                return redirect(url_for('reset'))
+
+            else:
+                return "Wrong answer"
+
+        return "User not found"
+
+    return render_template('forgot.html')
+
+
+# ================= RESET =================
+@app.route('/reset', methods=['GET','POST'])
+def reset():
+
+    if 'reset_user' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        new_password = request.form['new_password']
+
+        # Strong password validation
+        password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$'
+        if not re.match(password_pattern, new_password):
+            return "Weak password"
+
+        users = load_users()
+        username = session['reset_user']
+
+        users[username]['password'] = new_password
+        save_users(users)
+
+        session.pop('reset_user')
+
+        return redirect(url_for('login'))
+
+    return render_template('reset.html')
 @app.route('/')
+def home():
+    return redirect(url_for('register'))
+
+@app.route('/welcome')
 def welcome():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
     """Render the welcome page"""
     if translator is None:
         return "Model not found! Please train a model first.", 500
     return render_template('welcome.html')
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('login'))
 
 @app.route('/camera')
 def camera_route():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
     """Render the camera detection page"""
     if translator is None:
         return "Model not found! Please train a model first.", 500
@@ -187,6 +334,9 @@ def camera_route():
 
 @app.route('/translation')
 def translation():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
     """Render the translation page"""
     if translator is None:
         return "Model not found! Please train a model first.", 500
@@ -476,6 +626,34 @@ def get_languages():
         'ur': 'Urdu'
     }
     return jsonify({'languages': languages})
+
+
+    if request.method == 'POST':
+        username = request.form['username']
+        answer = request.form['answer'].lower()
+
+        users = load_users()
+
+        if username in users:
+
+            if users[username]['answer'] == answer:
+                session['reset_user'] = username
+                return redirect(url_for('reset'))
+
+            else:
+                return "Wrong answer"
+
+        return "User not found"
+
+    return render_template('forgot.html')
+
+
+    
+
+
+
+
+
 
 
 if __name__ == '__main__':

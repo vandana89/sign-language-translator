@@ -1,3 +1,5 @@
 venv/
 __pycache__/
 *.pyc
+models/*.h5
+sign_language_data/
