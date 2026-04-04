@@ -3,3 +3,17 @@ __pycache__/
 *.pyc
 models/*.h5
 sign_language_data/
+# Ignore model & dataset files
+*.h5
+*.npy
+*.csv
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# OS files
+.DS_Store
